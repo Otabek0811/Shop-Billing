@@ -2242,12 +2242,6 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "search_staff_id",
-                        "name": "search_staff_id",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
                         "description": "search_source_type",
                         "name": "search_source_type",
                         "in": "query"

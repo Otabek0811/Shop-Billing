@@ -113,11 +113,8 @@ func (r *staff_transactionRepo) GetList(ctx context.Context, req *models.StaffTr
 		where += ` AND sale_id ILIKE '%' || '` + req.SearchSaleID + `' || '%'`
 	}
 
-	if req.SearchStaffID != "" {
-		where += ` AND staff_id ILIKE '%' || '` + req.SearchStaffID + `' || '%'`
-	}
 	if req.SearchSourceType != "" {
-		where += ` AND sorce_type ILIKE '%' || '` + req.SearchSourceType + `' || '%'`
+		where += ` AND source_type ILIKE '%' || '` + req.SearchSourceType + `' || '%'`
 	}
 
 	if req.SortPriceType != "" {
