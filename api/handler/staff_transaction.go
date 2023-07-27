@@ -72,7 +72,6 @@ func (h *handler) GetListStaffTransaction(c *gin.Context) {
 		Offset: offset,
 		Limit:  limit,
 		SearchSaleID:      c.Query("search_sale_id"),
-		SearchStaffID:    c.Query("search_staff_id"),
 		SearchSourceType:   c.Query("search_source_type"),
 		SortPriceType:   c.Query("search_price_type"),
 	})
