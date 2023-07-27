@@ -49,6 +49,7 @@ func (h *handler) GetByIdStaffTransaction(c *gin.Context) {
 // @Param offset query string false "offset"
 // @Param limit query string false "limit"
 // @Param search_sale_id query string false "search_sale_id"
+// @Param search_staff_id query string false "search_staff_id"
 // @Param search_source_type query string false "search_source_type"
 // @Param search_price_type query string false "search_price_type"
 // @Success 200 {object} Response{data=string} "Success Request"
@@ -72,6 +73,7 @@ func (h *handler) GetListStaffTransaction(c *gin.Context) {
 		Offset: offset,
 		Limit:  limit,
 		SearchSaleID:      c.Query("search_sale_id"),
+		SearchStaffID:    c.Query("search_staff_id"),
 		SearchSourceType:   c.Query("search_source_type"),
 		SortPriceType:   c.Query("search_price_type"),
 	})

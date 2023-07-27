@@ -30,23 +30,28 @@ func (r *staff_transactionRepo) GetByID(ctx context.Context, req *models.StaffTr
 		description      sql.NullString
 		price            sql.NullFloat64
 		sale_id          sql.NullString
+		staff_id         sql.NullString
 		source_type      sql.NullString
 		createdAt        sql.NullString
 		updatedAt        sql.NullString
+		staff_name       sql.NullString
 	)
 
 	query = `
 		SELECT
-			id,
-			transaction_type,
-			description,
-			price,
-			sale_id,
-			source_type,
-			created_at,
-			updated_at
-		FROM staff_transaction
-		WHERE id=$1
+			st.id,
+			st.transaction_type,
+			st.description,
+			st.price,
+			st.sale_id,
+			st.staff_id,
+			st.source_type,
+			st.created_at,
+			st.updated_at,
+			s.name
+		FROM staff_transaction as st
+		join staff as s on s.id = st.staff_id
+		WHERE st.id=$1 
 	`
 
 	err := r.db.QueryRow(ctx, query, req.Id).Scan(
@@ -55,9 +60,11 @@ func (r *staff_transactionRepo) GetByID(ctx context.Context, req *models.StaffTr
 		&description,
 		&price,
 		&sale_id,
+		&staff_id,
 		&source_type,
 		&createdAt,
 		&updatedAt,
+		&staff_name,
 	)
 
 	if err != nil {
@@ -70,9 +77,11 @@ func (r *staff_transactionRepo) GetByID(ctx context.Context, req *models.StaffTr
 		Description:     description.String,
 		Price:           price.Float64,
 		SaleID:          sale_id.String,
+		StaffID:         staff_id.String,
 		SourceType:      source_type.String,
 		CreatedAt:       createdAt.String,
 		UpdatedAt:       updatedAt.String,
+		StaffName:       staff_id.String,
 	}, nil
 }
 
@@ -95,6 +104,7 @@ func (r *staff_transactionRepo) GetList(ctx context.Context, req *models.StaffTr
 			description,
 			price,
 			sale_id,
+			staff_id,
 			source_type,
 			created_at,
 			updated_at
@@ -116,22 +126,21 @@ func (r *staff_transactionRepo) GetList(ctx context.Context, req *models.StaffTr
 	if req.SearchSourceType != "" {
 		where += ` AND source_type ILIKE '%' || '` + req.SearchSourceType + `' || '%'`
 	}
+	if req.SearchSourceType != "" {
+		where += ` AND staff_id = '` + req.SearchSourceType + `'`
+	}
 
 	if req.SortPriceType != "" {
-		orderBY += `  price ` + req.SortPriceType 
+		orderBY += `  price ` + req.SortPriceType
 		query += where + orderBY + offset + limit
 	} else {
 		query += where + offset + limit
 	}
 
-	
-	
-
 	rows, err := r.db.Query(ctx, query)
 	if err != nil {
 		return nil, err
 	}
-
 
 	for rows.Next() {
 		var (
@@ -140,6 +149,7 @@ func (r *staff_transactionRepo) GetList(ctx context.Context, req *models.StaffTr
 			description      sql.NullString
 			price            sql.NullFloat64
 			sale_id          sql.NullString
+			staff_id         sql.NullString
 			source_type      sql.NullString
 			createdAt        sql.NullString
 			updatedAt        sql.NullString
@@ -152,6 +162,7 @@ func (r *staff_transactionRepo) GetList(ctx context.Context, req *models.StaffTr
 			&description,
 			&price,
 			&sale_id,
+			&staff_id,
 			&source_type,
 			&createdAt,
 			&updatedAt,
@@ -167,6 +178,7 @@ func (r *staff_transactionRepo) GetList(ctx context.Context, req *models.StaffTr
 			Description:     description.String,
 			Price:           price.Float64,
 			SaleID:          sale_id.String,
+			StaffID:         staff_id.String,
 			SourceType:      source_type.String,
 			CreatedAt:       createdAt.String,
 			UpdatedAt:       updatedAt.String,

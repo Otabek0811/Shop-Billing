@@ -248,7 +248,6 @@ func (r *biznesRepo) Do_Staff_Transaction(ctx context.Context, req *models.Sale)
 		queryGetData             string
 		balanceQuery             string
 		checkBonusAssistantQuery string
-		// checkBonusCashierQuery   string
 		cashierData          models.Staff
 		cashier_tarif        string
 		cashier_tarif_cash   float64
@@ -263,13 +262,7 @@ func (r *biznesRepo) Do_Staff_Transaction(ctx context.Context, req *models.Sale)
 		source_type      string
 
 		id          sql.NullString
-		name        sql.NullString
-		staffType   sql.NullString
 		balance     sql.NullFloat64
-		tarifID     sql.NullString
-		branchID    sql.NullString
-		createdAt   sql.NullString
-		updatedAt   sql.NullString
 		tarif       sql.NullString
 		tarif_cash  sql.NullFloat64
 		tarif_card  sql.NullFloat64
@@ -285,13 +278,7 @@ func (r *biznesRepo) Do_Staff_Transaction(ctx context.Context, req *models.Sale)
 	queryGetData = `
 		SELECT 
 			s.id,
-			s.name,
-			s.staff_type,
 			s.balance,
-			s.tarif_id,
-			s.branch_id,
-			s.created_at,
-			s.updated_at,
 			st.type_tarif,
 			st.amountforcash,
 			st.amountforcard
@@ -304,24 +291,14 @@ func (r *biznesRepo) Do_Staff_Transaction(ctx context.Context, req *models.Sale)
 		UPDATE
 			staff
 		SET
-			name=$2,
-			staff_type=$3,
-			balance=$4,
-			tarif_id=$5,
-			branch_id=$6,
+			balance=$2,
 			updated_at=NOW()
 		WHERE id=$1
 	`
 
 	err = trx.QueryRow(ctx, queryGetData, req.CashierID).Scan(
 		&id,
-		&name,
-		&staffType,
 		&balance,
-		&tarifID,
-		&branchID,
-		&createdAt,
-		&updatedAt,
 		&tarif,
 		&tarif_cash,
 		&tarif_card,
@@ -331,13 +308,7 @@ func (r *biznesRepo) Do_Staff_Transaction(ctx context.Context, req *models.Sale)
 	}
 
 	cashierData.Id = id.String
-	cashierData.Name = name.String
-	cashierData.StaffType = staffType.String
 	cashierData.Balance = balance.Float64
-	cashierData.TarifID = tarifID.String
-	cashierData.BranchID = branchID.String
-	cashierData.CreatedAt = createdAt.String
-	cashierData.UpdatedAt = updatedAt.String
 	cashier_tarif = tarif.String
 	cashier_tarif_cash = tarif_cash.Float64
 	cashier_tarif_card = tarif_card.Float64
@@ -381,11 +352,7 @@ func (r *biznesRepo) Do_Staff_Transaction(ctx context.Context, req *models.Sale)
 
 	_, err = trx.Exec(ctx, balanceQuery,
 		req.CashierID,
-		cashierData.Name,
-		cashierData.StaffType,
 		cashierData.Balance,
-		cashierData.TarifID,
-		cashierData.BranchID,
 	)
 
 	if err != nil {
@@ -395,13 +362,7 @@ func (r *biznesRepo) Do_Staff_Transaction(ctx context.Context, req *models.Sale)
 	if req.AssistentID != "" {
 		err = trx.QueryRow(ctx, queryGetData, req.AssistentID).Scan(
 			&id,
-			&name,
-			&staffType,
 			&balance,
-			&tarifID,
-			&branchID,
-			&createdAt,
-			&updatedAt,
 			&tarif,
 			&tarif_cash,
 			&tarif_card,
@@ -411,13 +372,7 @@ func (r *biznesRepo) Do_Staff_Transaction(ctx context.Context, req *models.Sale)
 		}
 
 		assistantData.Id = id.String
-		assistantData.Name = name.String
-		assistantData.StaffType = staffType.String
 		assistantData.Balance = balance.Float64
-		assistantData.TarifID = tarifID.String
-		assistantData.BranchID = branchID.String
-		assistantData.CreatedAt = createdAt.String
-		assistantData.UpdatedAt = updatedAt.String
 		assistant_tarif = tarif.String
 		assistant_tarif_cash = tarif_cash.Float64
 		assistant_tarif_card = tarif_card.Float64
@@ -463,11 +418,7 @@ func (r *biznesRepo) Do_Staff_Transaction(ctx context.Context, req *models.Sale)
 
 		_, err = trx.Exec(ctx, balanceQuery,
 			req.AssistentID,
-			assistantData.Name,
-			assistantData.StaffType,
 			assistantData.Balance,
-			assistantData.TarifID,
-			assistantData.BranchID,
 		)
 
 		if err != nil {
@@ -477,13 +428,30 @@ func (r *biznesRepo) Do_Staff_Transaction(ctx context.Context, req *models.Sale)
 	}
 
 	query2 := `
-		INSERT INTO staff_transaction(id, sale_id, transaction_type, price, description, source_type, updated_at)
-		VALUES ($1, $2, $3, $4, $5, $6, NOW())
+		INSERT INTO staff_transaction(id, sale_id, staff_id,transaction_type, price, description, source_type, updated_at)
+		VALUES ($1, $2, $3, $4, $5, $6,$7, NOW())
 	`
 
 	_, err = trx.Exec(ctx, query2,
 		id2,
 		req.Id,
+		req.AssistentID,
+		transaction_type,
+		req.Price,
+		description,
+		source_type,
+	)
+
+	if err != nil {
+		return err
+	}
+
+	id2=uuid.New().String()
+
+	_, err = trx.Exec(ctx, query2,
+		id2,
+		req.Id,
+		req.CashierID,
 		transaction_type,
 		req.Price,
 		description,
@@ -499,11 +467,10 @@ func (r *biznesRepo) Do_Staff_Transaction(ctx context.Context, req *models.Sale)
 		checkBonusAssistantQuery = `
 				SELECT 
 					Count(*),
-					SUM(st.price)
+					SUM(price)
 
-				FROM staff_transaction AS st
-				JOIN sale AS sl ON sl.id = st.sale_id
-				WHERE st.transaction_type = 'Topup' and st.source_type = 'sales' and sl.assistant_id = $1
+				FROM staff_transaction
+				WHERE transaction_type = 'Topup' and source_type = 'sales' and staff_id = $1
 			`
 
 		err = trx.QueryRow(ctx, checkBonusAssistantQuery, req.AssistentID).Scan(
@@ -522,14 +489,12 @@ func (r *biznesRepo) Do_Staff_Transaction(ctx context.Context, req *models.Sale)
 		checkBonusQuery := `
 		SELECT 
 			COUNT(*)
-		FROM staff_transaction AS st
-		JOIN sale AS sl ON sl.id = st.sale_id
-		JOIN staff AS s ON s.id = sl.assistant_id
-		WHERE st.source_type = 'bonus' and date(st.created_at)=current_date
+		FROM staff_transaction
+		WHERE source_type = 'bonus' and date(created_at)=current_date and staff_id=$1
 	`
 		var c int
 
-		err = r.db.QueryRow(ctx, checkBonusQuery).Scan(
+		err = r.db.QueryRow(ctx, checkBonusQuery,req.AssistentID).Scan(
 			&c,
 		)
 
@@ -537,8 +502,8 @@ func (r *biznesRepo) Do_Staff_Transaction(ctx context.Context, req *models.Sale)
 
 			id4 := uuid.New().String()
 			query2 := `
-					INSERT INTO staff_transaction(id, sale_id, transaction_type, price, description, source_type, updated_at)
-					VALUES ($1, $2, $3, $4, $5, $6, NOW())
+					INSERT INTO staff_transaction(id, sale_id,staff_id, transaction_type, price, description, source_type, updated_at)
+					VALUES ($1, $2, $3, $4, $5, $6, $7, NOW())
 				`
 			transaction_type = "Topup"
 			description = "bonus added"
@@ -547,6 +512,7 @@ func (r *biznesRepo) Do_Staff_Transaction(ctx context.Context, req *models.Sale)
 			_, err = trx.Exec(ctx, query2,
 				id4,
 				req.Id,
+				req.AssistentID,
 				transaction_type,
 				req.Price,
 				description,
@@ -561,11 +527,7 @@ func (r *biznesRepo) Do_Staff_Transaction(ctx context.Context, req *models.Sale)
 
 			_, err = trx.Exec(ctx, balanceQuery,
 				req.AssistentID,
-				assistantData.Name,
-				assistantData.StaffType,
 				assistantData.Balance,
-				assistantData.TarifID,
-				assistantData.BranchID,
 			)
 
 			if err != nil {
@@ -580,11 +542,10 @@ func (r *biznesRepo) Do_Staff_Transaction(ctx context.Context, req *models.Sale)
 	checkBonusCashierQuery := `
 			SELECT 
 				Count(*),
-				SUM(st.price)
+				SUM(price)
 
-			FROM staff_transaction AS st
-			JOIN sale AS sl ON sl.id = st.sale_id
-			WHERE st.transaction_type = 'Topup' and st.source_type = 'sales' and sl.cashier_id = $1
+			FROM staff_transaction 
+			WHERE transaction_type = 'Topup' and source_type = 'sales' and staff_id = $1
 		`
 
 	err = trx.QueryRow(ctx, checkBonusCashierQuery, req.CashierID).Scan(
@@ -603,14 +564,12 @@ func (r *biznesRepo) Do_Staff_Transaction(ctx context.Context, req *models.Sale)
 	checkBonusQuery := `
 		SELECT 
 			COUNT(*)
-		FROM staff_transaction AS st
-		JOIN sale AS sl ON sl.id = st.sale_id
-		JOIN staff AS s ON s.id = sl.cashier_id
-		WHERE st.source_type = 'bonus' and date(st.created_at)=current_date
+		FROM staff_transaction 
+		WHERE source_type = 'bonus' and date(created_at)=current_date and staff_id=$1
 	`
 	var c int
 
-	err = r.db.QueryRow(ctx, checkBonusQuery).Scan(
+	err = r.db.QueryRow(ctx, checkBonusQuery,req.CashierID).Scan(
 		&c,
 	)
 
@@ -618,8 +577,8 @@ func (r *biznesRepo) Do_Staff_Transaction(ctx context.Context, req *models.Sale)
 
 		id3 := uuid.New().String()
 		query2 := `
-				INSERT INTO staff_transaction(id, sale_id, transaction_type, price, description, source_type, updated_at)
-				VALUES ($1, $2, $3, $4, $5, $6, NOW())
+				INSERT INTO staff_transaction(id, sale_id,staff_id, transaction_type, price, description, source_type, updated_at)
+				VALUES ($1, $2, $3, $4, $5, $6, $7, NOW())
 			`
 		transaction_type = "Topup"
 		description = "bonus added"
@@ -628,6 +587,7 @@ func (r *biznesRepo) Do_Staff_Transaction(ctx context.Context, req *models.Sale)
 		_, err = trx.Exec(ctx, query2,
 			id3,
 			req.Id,
+			req.CashierID,
 			transaction_type,
 			req.Price,
 			description,
@@ -642,11 +602,7 @@ func (r *biznesRepo) Do_Staff_Transaction(ctx context.Context, req *models.Sale)
 
 		_, err = trx.Exec(ctx, balanceQuery,
 			req.CashierID,
-			cashierData.Name,
-			cashierData.StaffType,
 			cashierData.Balance,
-			cashierData.TarifID,
-			cashierData.BranchID,
 		)
 
 		if err != nil {
@@ -657,3 +613,6 @@ func (r *biznesRepo) Do_Staff_Transaction(ctx context.Context, req *models.Sale)
 
 	return nil
 }
+
+
+

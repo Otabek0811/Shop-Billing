@@ -1376,6 +1376,10 @@ paths:
         in: query
         name: search_sale_id
         type: string
+      - description: search_staff_id
+        in: query
+        name: search_staff_id
+        type: string
       - description: search_source_type
         in: query
         name: search_source_type
