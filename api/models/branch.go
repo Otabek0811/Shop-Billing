@@ -18,6 +18,7 @@ type Branch struct {
 	CreatedAt string `json:"created_at"`
 	UpdatedAt string `json:"updated_at"`
 	DeletedAt string `json:"deleted_at"`
+	CompanyName string  `json:"company_name"`
 }
 
 type UpdateBranch struct {

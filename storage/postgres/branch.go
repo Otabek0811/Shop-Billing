@@ -59,18 +59,21 @@ func (r *branchRepo) GetByID(ctx context.Context, req *models.BranchPrimaryKey) 
 		phoneNumber sql.NullString
 		createdAt   sql.NullString
 		updatedAt   sql.NullString
+		companyName  sql.NullString
 	)
 
 	query = `
 		SELECT
-			id,
-			name,
-			address,
-			company_id,
-			created_at,
-			updated_at
-		FROM branch
-		WHERE id=$1
+			b.id,
+			b.name,
+			b.address,
+			b.company_id,
+			b.created_at,
+			b.updated_at,
+			c.name
+		FROM branch AS b
+		LEFT JOIN company as c on c.id=b.company_id
+		WHERE b.id=$1
 	`
 
 	err := r.db.QueryRow(ctx, query, req.Id).Scan(
@@ -80,6 +83,7 @@ func (r *branchRepo) GetByID(ctx context.Context, req *models.BranchPrimaryKey) 
 		&phoneNumber,
 		&createdAt,
 		&updatedAt,
+		&companyName,
 	)
 
 	if err != nil {
@@ -93,6 +97,7 @@ func (r *branchRepo) GetByID(ctx context.Context, req *models.BranchPrimaryKey) 
 		CompanyID: phoneNumber.String,
 		CreatedAt: createdAt.String,
 		UpdatedAt: updatedAt.String,
+		CompanyName: companyName.String,
 	}, nil
 }
 
@@ -131,10 +136,8 @@ func (r *branchRepo) GetList(ctx context.Context, req *models.BranchGetListReque
 	}
 
 
-	fmt.Println(req.SearchBYName)
 	if req.SearchByAddress != "" {
 		where += ` AND address ILIKE '%' || '` + req.SearchByAddress + `' || '%'`
-		fmt.Println("djfffffffffffffffffffffn")
 	}
 
 	query += where + offset + limit
@@ -227,10 +230,6 @@ func (r *branchRepo) Patch(ctx context.Context, req *models.PatchRequest) (int64
 		set   string
 	)
 
-	fmt.Println(req)
-
-	fmt.Println()
-	fmt.Println(req.Fields)
 	
 	
 

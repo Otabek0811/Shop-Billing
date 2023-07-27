@@ -57,19 +57,6 @@ definitions:
       type_tarif:
         type: string
     type: object
-  models.CreateStaffTransaction:
-    properties:
-      description:
-        type: string
-      price:
-        type: string
-      sale_id:
-        type: string
-      source_type:
-        type: string
-      transaction_type:
-        type: string
-    type: object
   models.PatchRequest:
     properties:
       fields:
@@ -134,21 +121,6 @@ definitions:
       name:
         type: string
       type_tarif:
-        type: string
-    type: object
-  models.UpdateStaffTransaction:
-    properties:
-      description:
-        type: string
-      id:
-        type: string
-      price:
-        type: string
-      sale_id:
-        type: string
-      source_type:
-        type: string
-      transaction_type:
         type: string
     type: object
 info:
@@ -1439,92 +1411,7 @@ paths:
       summary: Get List StaffTransaction
       tags:
       - StaffTransaction
-    post:
-      consumes:
-      - application/json
-      description: Create StaffTransaction
-      operationId: create_staff_transaction
-      parameters:
-      - description: CreateStaffTransactionRequest
-        in: body
-        name: staff_transaction
-        required: true
-        schema:
-          $ref: '#/definitions/models.CreateStaffTransaction'
-      responses:
-        "200":
-          description: Success Request
-          schema:
-            allOf:
-            - $ref: '#/definitions/handler.Response'
-            - properties:
-                data:
-                  type: string
-              type: object
-        "400":
-          description: Bad Request
-          schema:
-            allOf:
-            - $ref: '#/definitions/handler.Response'
-            - properties:
-                data:
-                  type: string
-              type: object
-        "500":
-          description: Server error
-          schema:
-            allOf:
-            - $ref: '#/definitions/handler.Response'
-            - properties:
-                data:
-                  type: string
-              type: object
-      summary: Create StaffTransaction
-      tags:
-      - StaffTransaction
   /staff_transaction/{id}:
-    delete:
-      consumes:
-      - application/json
-      description: Delete StaffTransaction
-      operationId: delete_staff_transaction
-      parameters:
-      - description: id
-        in: path
-        name: id
-        required: true
-        type: string
-      responses:
-        "200":
-          description: Success Request
-          schema:
-            allOf:
-            - $ref: '#/definitions/handler.Response'
-            - properties:
-                data:
-                  type: string
-              type: object
-        "400":
-          description: Bad Request
-          schema:
-            allOf:
-            - $ref: '#/definitions/handler.Response'
-            - properties:
-                data:
-                  type: string
-              type: object
-        "500":
-          description: Server error
-          schema:
-            allOf:
-            - $ref: '#/definitions/handler.Response'
-            - properties:
-                data:
-                  type: string
-              type: object
-      summary: Delete StaffTransaction
-      tags:
-      - StaffTransaction
     get:
       consumes:
       - application/json
@@ -1565,102 +1452,6 @@ paths:
                   type: string
               type: object
       summary: Get By ID StaffTransaction
-      tags:
-      - StaffTransaction
-    patch:
-      consumes:
-      - application/json
-      description: Patch StaffTransaction
-      operationId: patch_staff_transaction
-      parameters:
-      - description: id
-        in: path
-        name: id
-        required: true
-        type: string
-      - description: PatchStaffTransactionRequest
-        in: body
-        name: staff_transaction
-        required: true
-        schema:
-          $ref: '#/definitions/models.PatchRequest'
-      responses:
-        "200":
-          description: Success Request
-          schema:
-            allOf:
-            - $ref: '#/definitions/handler.Response'
-            - properties:
-                data:
-                  type: string
-              type: object
-        "400":
-          description: Bad Request
-          schema:
-            allOf:
-            - $ref: '#/definitions/handler.Response'
-            - properties:
-                data:
-                  type: string
-              type: object
-        "500":
-          description: Server error
-          schema:
-            allOf:
-            - $ref: '#/definitions/handler.Response'
-            - properties:
-                data:
-                  type: string
-              type: object
-      summary: Patch StaffTransaction
-      tags:
-      - StaffTransaction
-    put:
-      consumes:
-      - application/json
-      description: Update StaffTransaction
-      operationId: update_staff_transaction
-      parameters:
-      - description: id
-        in: path
-        name: id
-        required: true
-        type: string
-      - description: UpdateStaffTransactionRequest
-        in: body
-        name: staff_transaction
-        required: true
-        schema:
-          $ref: '#/definitions/models.UpdateStaffTransaction'
-      responses:
-        "200":
-          description: Success Request
-          schema:
-            allOf:
-            - $ref: '#/definitions/handler.Response'
-            - properties:
-                data:
-                  type: string
-              type: object
-        "400":
-          description: Bad Request
-          schema:
-            allOf:
-            - $ref: '#/definitions/handler.Response'
-            - properties:
-                data:
-                  type: string
-              type: object
-        "500":
-          description: Server error
-          schema:
-            allOf:
-            - $ref: '#/definitions/handler.Response'
-            - properties:
-                data:
-                  type: string
-              type: object
-      summary: Update StaffTransaction
       tags:
       - StaffTransaction
 swagger: "2.0"

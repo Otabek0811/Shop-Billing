@@ -74,7 +74,6 @@ func (r *biznesRepo) GetTopStaff(ctx context.Context, req *models.TopStaffReques
 
 	query = queryAssistant + whereA + havingA
 
-	fmt.Println(query)
 	rows, err := r.db.Query(ctx, query)
 
 	if err != nil {
@@ -138,7 +137,6 @@ func (r *biznesRepo) GetTopStaff(ctx context.Context, req *models.TopStaffReques
 
 	query = queryCashier + whereC + havingC
 
-	fmt.Println(query)
 	rows, err = r.db.Query(ctx, query)
 	if err != nil {
 		return nil, err
@@ -344,11 +342,6 @@ func (r *biznesRepo) Do_Staff_Transaction(ctx context.Context, req *models.Sale)
 	cashier_tarif_cash = tarif_cash.Float64
 	cashier_tarif_card = tarif_card.Float64
 
-	fmt.Println(req.Status)
-
-	if req.Status == "success" {
-		fmt.Println("kjncsikjcnkas")
-	}
 
 	if req.Status == "success" {
 		description = "Sales Finished Succesfully"
@@ -525,8 +518,7 @@ func (r *biznesRepo) Do_Staff_Transaction(ctx context.Context, req *models.Sale)
 		countAssistant = int(count.Int64)
 		totalPriceAssistant = total_price.Float64
 
-		fmt.Println(countAssistant, "Assistant")
-
+		
 		checkBonusQuery := `
 		SELECT 
 			COUNT(*)
@@ -607,8 +599,7 @@ func (r *biznesRepo) Do_Staff_Transaction(ctx context.Context, req *models.Sale)
 	countCashier = int(count.Int64)
 	totalPriceCashier = total_price.Float64
 
-	fmt.Println(countCashier, "Cashier")
-
+	
 	checkBonusQuery := `
 		SELECT 
 			COUNT(*)
