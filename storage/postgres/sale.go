@@ -153,7 +153,7 @@ func (r *saleRepo) GetList(ctx context.Context, req *models.SaleGetListRequest) 
 		where   = " WHERE deleted_at is NULL"
 		offset  = " OFFSET 0"
 		limit   = " LIMIT 10"
-		orderBY = " "
+		orderBY = " ORDER BY "
 	)
 
 	query = `
@@ -204,11 +204,14 @@ func (r *saleRepo) GetList(ctx context.Context, req *models.SaleGetListRequest) 
 	if req.SearchCreatedAtTo != "" {
 		where += ` AND date(created_at) <= || '` + req.SearchCreatedAtTo + `'`
 	}
+
 	if req.SortPriceType != "" {
-		orderBY += ` price '` + req.SortPriceType + `'`
+		orderBY += ` price ` + req.SortPriceType 
+		query += where + orderBY + offset + limit
+	} else {
+		query += where + offset + limit
 	}
 
-	query += where + offset + limit
 
 	rows, err := r.db.Query(ctx, query)
 	if err != nil {
@@ -345,7 +348,7 @@ func (r *saleRepo) Patch(ctx context.Context, req *models.PatchRequest) (int64, 
 
 func (r *saleRepo) Delete(ctx context.Context, req *models.SalePrimaryKey) error {
 
-	_, err := r.db.Exec(ctx,  "Update sale SET deleted_at=now() WHERE id = $1", req.Id)
+	_, err := r.db.Exec(ctx, "Update sale SET deleted_at=now() WHERE id = $1", req.Id)
 	if err != nil {
 		return err
 	}

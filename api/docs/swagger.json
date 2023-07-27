@@ -2224,14 +2224,26 @@
                     },
                     {
                         "type": "string",
-                        "description": "search_by_name",
-                        "name": "search_Name",
+                        "description": "search_sale_id",
+                        "name": "search_sale_id",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "description": "search_by_address",
-                        "name": "search_Address",
+                        "description": "search_staff_id",
+                        "name": "search_staff_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "search_source_type",
+                        "name": "search_source_type",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "search_price_type",
+                        "name": "search_price_type",
                         "in": "query"
                     }
                 ],

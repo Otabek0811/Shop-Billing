@@ -1372,13 +1372,21 @@ paths:
         in: query
         name: limit
         type: string
-      - description: search_by_name
+      - description: search_sale_id
         in: query
-        name: search_Name
+        name: search_sale_id
         type: string
-      - description: search_by_address
+      - description: search_staff_id
         in: query
-        name: search_Address
+        name: search_staff_id
+        type: string
+      - description: search_source_type
+        in: query
+        name: search_source_type
+        type: string
+      - description: search_price_type
+        in: query
+        name: search_price_type
         type: string
       responses:
         "200":

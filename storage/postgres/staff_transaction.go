@@ -28,7 +28,7 @@ func (r *staff_transactionRepo) GetByID(ctx context.Context, req *models.StaffTr
 		id               sql.NullString
 		transaction_type sql.NullString
 		description      sql.NullString
-		price            sql.NullString
+		price            sql.NullFloat64
 		sale_id          sql.NullString
 		source_type      sql.NullString
 		createdAt        sql.NullString
@@ -68,7 +68,7 @@ func (r *staff_transactionRepo) GetByID(ctx context.Context, req *models.StaffTr
 		Id:              id.String,
 		TransactionType: transaction_type.String,
 		Description:     description.String,
-		Price:           price.String,
+		Price:           price.Float64,
 		SaleID:          sale_id.String,
 		SourceType:      source_type.String,
 		CreatedAt:       createdAt.String,
@@ -79,11 +79,12 @@ func (r *staff_transactionRepo) GetByID(ctx context.Context, req *models.StaffTr
 func (r *staff_transactionRepo) GetList(ctx context.Context, req *models.StaffTransactionGetListRequest) (*models.StaffTransactionGetListResponse, error) {
 
 	var (
-		resp   = &models.StaffTransactionGetListResponse{}
-		query  string
-		where  = " WHERE deleted_at is NULL"
-		offset = " OFFSET 0"
-		limit  = " LIMIT 10"
+		resp    = &models.StaffTransactionGetListResponse{}
+		query   string
+		where   = " WHERE deleted_at is NULL"
+		offset  = " OFFSET 0"
+		limit   = " LIMIT 10"
+		orderBY = " ORDER BY"
 	)
 
 	query = `
@@ -119,19 +120,28 @@ func (r *staff_transactionRepo) GetList(ctx context.Context, req *models.StaffTr
 		where += ` AND sorce_type ILIKE '%' || '` + req.SearchSourceType + `' || '%'`
 	}
 
-	query += where + offset + limit
+	if req.SortPriceType != "" {
+		orderBY += `  price ` + req.SortPriceType 
+		query += where + orderBY + offset + limit
+	} else {
+		query += where + offset + limit
+	}
+
+	
+	
 
 	rows, err := r.db.Query(ctx, query)
 	if err != nil {
 		return nil, err
 	}
 
+
 	for rows.Next() {
 		var (
 			id               sql.NullString
 			transaction_type sql.NullString
 			description      sql.NullString
-			price            sql.NullString
+			price            sql.NullFloat64
 			sale_id          sql.NullString
 			source_type      sql.NullString
 			createdAt        sql.NullString
@@ -158,7 +168,7 @@ func (r *staff_transactionRepo) GetList(ctx context.Context, req *models.StaffTr
 			Id:              id.String,
 			TransactionType: transaction_type.String,
 			Description:     description.String,
-			Price:           price.String,
+			Price:           price.Float64,
 			SaleID:          sale_id.String,
 			SourceType:      source_type.String,
 			CreatedAt:       createdAt.String,

@@ -7,7 +7,7 @@ type StaffTransactionPrimaryKey struct {
 type CreateStaffTransaction struct {
 	TransactionType string `json:"transaction_type"`
 	Description     string `json:"description"`
-	Price          string `json:"price"`
+	Price          float64 `json:"price"`
 	SaleID          string `json:"sale_id"`
 	SourceType     string  `json:"source_type"`
 }
@@ -16,7 +16,7 @@ type StaffTransaction struct {
 	Id string `json:"id"`
 	TransactionType string `json:"transaction_type"`
 	Description     string `json:"description"`
-	Price          string `json:"price"`
+	Price          float64 `json:"price"`
 	SaleID          string `json:"sale_id"`
 	SourceType     string  `json:"source_type"`
 	CreatedAt string `json:"created_at"`
@@ -28,7 +28,7 @@ type UpdateStaffTransaction struct {
 	Id string `json:"id"`
 	TransactionType string `json:"transaction_type"`
 	Description     string `json:"description"`
-	Price          string `json:"price"`
+	Price          float64 `json:"price"`
 	SaleID          string `json:"sale_id"`
 	SourceType     string  `json:"source_type"`
 }
@@ -39,6 +39,8 @@ type StaffTransactionGetListRequest struct {
 	SearchSaleID string `json:"search_sale_id"`
 	SearchStaffID string `json:"search_staff_id"`
 	SearchSourceType string `json:"search_source_type"`
+	SortPriceType    string    	`json:"sort_price_type"`
+
 }
 
 type StaffTransactionGetListResponse struct {
