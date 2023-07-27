@@ -1,0 +1,4 @@
+CREATE TABLE company (
+    id UUID PRIMARY KEY,
+    name VARCHAR NOT NULL
+);
