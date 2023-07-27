@@ -44,12 +44,8 @@ func NewApi(r *gin.Engine, cfg *config.Config, storage storage.StorageI, logger 
 	r.PATCH("/sale/:id", handler.PatchSale)
 	r.DELETE("/sale/:id", handler.DeleteSale)
 
-	r.POST("/staff_transaction", handler.CreateStaffTransaction)
 	r.GET("/staff_transaction/:id", handler.GetByIdStaffTransaction)
 	r.GET("/staff_transaction", handler.GetListStaffTransaction)
-	r.PUT("/staff_transaction/:id", handler.UpdateStaffTransaction)
-	r.PATCH("/staff_transaction/:id", handler.PatchStaffTransaction)
-	r.DELETE("/staff_transaction/:id", handler.DeleteStaffTransaction)
 
 	r.GET("/get_top_staff", handler.GetTopStaff)
 	r.GET("/get_top_branch", handler.GetTopBranchs)

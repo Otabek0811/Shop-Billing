@@ -55,12 +55,9 @@ type SaleRepoI interface {
 }
 
 type StaffTransactionRepoI interface{
-	Create(context.Context, *models.CreateStaffTransaction) (string, error)
 	GetByID(context.Context, *models.StaffTransactionPrimaryKey) (*models.StaffTransaction, error)
 	GetList(context.Context, *models.StaffTransactionGetListRequest) (*models.StaffTransactionGetListResponse, error)
-	Update(context.Context, *models.UpdateStaffTransaction) (int64, error)
-	Patch(context.Context, *models.PatchRequest) (int64, error)
-	Delete(context.Context, *models.StaffTransactionPrimaryKey) error
+	
 }
 
 
